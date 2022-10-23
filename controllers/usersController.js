@@ -8,7 +8,7 @@ const bcrypt = require("bcrypt");
 //@access Private
 const getAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find({}).select("-password").lean();
-  if (!users) {
+  if (!users?.length) {
     res.status(404).json({ message: "No users found" });
   }
   res.status(200).json(users);
@@ -47,7 +47,7 @@ const createNewUser = asyncHandler(async (req, res) => {
   const user = await User.create(userObject);
 
   if (user) {
-    res.status(201).json({ message: `User ${username}created successfully` });
+    res.status(201).json({ message: `User ${username} created successfully` });
   } else {
     res.status(400).json({ message: "Something went wrong" });
   }
@@ -111,8 +111,8 @@ const deleteUser = asyncHandler(async (req, res) => {
     });
   }
 
-  const notes = await Notes.findOne({ user: id }).lean().exec();
-  if (notes?.length) {
+  const note = await Note.findOne({ user: id }).lean().exec();
+  if (note) {
     res.status(409).json({ message: "User has assigned notes. " });
   }
 
